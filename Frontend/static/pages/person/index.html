@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+  <link rel="stylesheet" href="/site/assets/stylez.css">
+  <title>eSkills - Manage person</title>
+
+</head>
+<body>
+<template id="people-list">
+</template>
+<template id="edit-person">
+</template>
+<h1>Manage Person</h1>
+<button id="fetchAllPeople" disabled="true">Fetch all people</button>
+<div id="people">
+
+</div>
+</body>
+
+<script>
+  let PeopleList = null;
+
+  $("#people-list").load("/site/templates/people-list.html", function (loaded) {
+    PeopleList = Handlebars.compile(loaded);
+    $("#fetchAllPeople").removeAttr("disabled");
+  });
+
+  $("#fetchAllPeople").click(function (evt) {
+    $.ajax({url: "/rest/people", headers: {"x-mock": "yes"}})
+    .done(result => {
+      result.people = result.people.map(p => {
+        p.id = p["_id"]["$oid"];
+        return p;
+      });
+      $("#people").addClass("fade-in-element");
+      $("#people").html(PeopleList(result));
+
+    });
+  });
+</script>
+
+</html>

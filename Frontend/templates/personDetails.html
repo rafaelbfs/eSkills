@@ -1,0 +1,17 @@
+<form id="Person-Form" class="boxed-withShadow2">
+    <input id="person_id" type="text" hidden="true" value="{.Id}"></input>
+    <br>
+    <span>First Name:</span><input id="person_FirstName" type="text" value="{{.FirstName}}">
+    <span>Last Name</span><input id="person_LastName" type="text" value="{{.LastName}}">
+    <input class="boxed-withShadow1" type="submit"></input>
+</form>
+  <script>
+    $("#Person-Form").submit(evt => {
+      var dt = {"FirstName": $("#person_FirstName").value, "LastName": $("#person_LastName").value}
+      if (!$("#person_id").value) {
+        $.post("/rest/person", JSON.stringify(dt), data => {
+          $("#person_id").value = data.id;
+        })
+      }
+    })
+  </script>

@@ -1,0 +1,159 @@
+// [START declaration]
+
+syntax = "proto3";
+
+package eu.terranatal.skillz.entities;
+option csharp_namespace = "Terranatal.Skillz.Proto";
+option go_package = "gen/pb/skills";
+
+import "google/protobuf/timestamp.proto";
+// [END declaration]
+
+message PersonalIdentification {
+
+  enum DocumentType {
+    PASSPORT = 0;
+    REGISTRATION = 1;
+    SOCIAL_SECURITY = 2;
+    DRIVERS_LICENSE = 3;
+    MILITARY = 4;
+    OTHER = 7;
+  }
+  DocumentType type = 2;
+
+  string issuer = 3;
+  string category = 4;
+  string serialIdentification = 5;
+  string localIdentification = 6;
+  string remarks = 7;
+
+  google.protobuf.Timestamp dateIssued = 8;
+  google.protobuf.Timestamp expirationDate = 9;
+}
+
+message Experience {
+  string place = 1;
+  string placeRef = 2;
+  string type = 3;
+  string name = 4;
+
+  google.protobuf.Timestamp start = 6;
+  google.protobuf.Timestamp end = 7;
+}
+
+message OpenSourceProject {
+  string name = 1;
+  string site = 2;
+  string description = 3;
+  repeated string labels = 4;
+
+  google.protobuf.Timestamp start = 6;
+  google.protobuf.Timestamp end = 7;
+}
+
+message Certification {
+  string issuer = 1;
+  string holder = 2;
+  string name = 3;
+  string hash = 4;
+  string link = 5;
+
+  google.protobuf.Timestamp issuedOn = 6;
+}
+
+message Article {
+  string institution = 1;
+  string periodic = 2;
+  string title = 3;
+  repeated string coAuthors = 4;
+
+  enum ParticipationType {
+    MAIN_AUTHOR = 0;
+    CO_AUTHOR = 1;
+    ASSISTANT = 2;
+    GUEST = 3;
+    REVIEWER = 4;
+  }
+
+  ParticipationType participation = 5;
+  string link = 6;
+
+  google.protobuf.Timestamp publishedOn = 7;
+  string identificationCode = 8;
+}
+
+enum SkillLevel {NONE = 0; BASIC = 1; AVERAGE = 2; PROFICIENT = 3;
+  EXPERT = 4; AUTHORITY = 5;}
+
+message PersonSkill {
+  string name = 1;
+  SkillLevel level = 2;
+  string description = 3;
+
+  google.protobuf.Timestamp lastUpdated = 4;
+
+  oneof relatedTo {
+    Certification certification = 5;
+    Article article = 6;
+    Experience workExperience = 7;
+    OpenSourceProject openSourceProject = 8;
+  }
+}
+
+enum PhoneType {
+  MOBILE = 0;
+  HOME = 1;
+  WORK = 2;
+  ANY = 3;
+}
+
+message PhoneNumber {
+  string number = 1;
+  PhoneType type = 2;
+}
+
+message Person {
+  optional string googleId = 1;
+  optional string firstName = 2;
+  optional string middleName = 12;
+  optional string lastName = 3;
+  optional string id = 4;  // ObjectId
+  string email = 5;
+  repeated string alternativeEmail = 6;
+
+  repeated PhoneNumber phones = 7;
+  optional string picture = 8;
+  google.protobuf.Timestamp lastUpdated = 9;
+
+  repeated PersonalIdentification idDocuments = 10;
+
+  repeated PersonSkill skills = 11;
+}
+
+message PersonSearchParams {
+  optional string firstName = 1;
+  optional string middleName = 2;
+  optional string lastName = 3;
+  optional int64 id = 4;  // Unique ID number for this person.
+  optional string email = 5;
+  optional PersonalIdentification idDocument = 6;
+  optional PhoneNumber phoneNumber = 7;
+}
+
+message PersonUpdate {
+  uint64 id = 1;
+  Person newData = 3;
+}
+
+message UpdateResponse {
+  enum Status {COMPLETED_SUCCESSFULLY = 0; PARTIAL = 1; ERROR = 2;}
+
+  Status result = 1;
+  repeated string errorMessages = 2;
+}
+
+service PersonService {
+  rpc createNewPerson(Person) returns (Person);
+  rpc searchPerson(PersonSearchParams) returns (stream Person);
+  rpc updatePerson(PersonUpdate) returns (UpdateResponse);
+}

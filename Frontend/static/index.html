@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script type="module">
+    import init, { start } from "/rust/rust_wasm.js";
+    init().then(() => {
+      start();
+    });
+  </script>
+  <title>eSkills</title>
+</head>
+<body>
+<h1 id="overhead">Welcome to eSkills!</h1>
+<!--a href="pages/person/index.html">Edit a person</a-->
+<canvas id="canvas" height="600" width="600" ></canvas>
+
+</body>
+</html>

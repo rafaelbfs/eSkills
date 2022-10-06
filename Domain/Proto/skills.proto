@@ -1,0 +1,148 @@
+// [START declaration]
+
+syntax = "proto3";
+
+package eu.terranatal.skillz.entities;
+option csharp_namespace = "Terranatal.Skillz.Proto";
+option go_package = "generated/pb/skills";
+
+import "google/protobuf/timestamp.proto";
+// [END declaration]
+
+  enum PublicationType {
+    OTHER = 0;
+    PERIODIC_ARTICLE = 1;
+    BLOG_ARTICLE = 4;
+    BOOK = 2;
+    THESIS = 3;
+  }
+
+message Experience {
+  string place = 1;
+  string placeRef = 2;
+  string type = 3;
+  string name = 4;
+
+  google.protobuf.Timestamp start = 6;
+  google.protobuf.Timestamp end = 7;
+}
+
+message OpenSourceProject {
+  string name = 1;
+  string site = 2;
+  string description = 3;
+  repeated string labels = 4;
+
+  google.protobuf.Timestamp start = 6;
+  google.protobuf.Timestamp end = 7;
+}
+
+message Certification {
+  string issuer = 1;
+  optional string dbId = 2;
+  string name = 3;
+  string hash = 4;
+  string link = 5;
+  repeated string keywords = 7;
+
+  google.protobuf.Timestamp issuedOn = 6;
+}
+
+message Publication {
+  optional string id = 1;
+  string institution = 10;
+  string periodic = 2;
+  string title = 3;
+  string pages = 4;
+
+
+  enum ParticipationType {
+    MAIN_AUTHOR = 0;
+    CO_AUTHOR = 1;
+    ASSISTANT = 2;
+    GUEST = 3;
+    REVIEWER = 4;
+  }
+
+  ParticipationType participation = 5;
+  string link = 6;
+
+  google.protobuf.Timestamp publishedOn = 7;
+  string identificationCode = 8;
+  repeated string keywords = 9;
+}
+
+enum SkillLevel {NONE = 0; BASIC = 1; AVERAGE = 2; PROFICIENT = 3;
+  EXPERT = 4; AUTHORITY = 5;}
+
+message PersonAchievements {
+    repeated Certification certifications = 5;
+    repeated Publication publications = 6;
+    repeated Experience workExperience = 7;
+    repeated OpenSourceProject openSourceProjects = 8;
+}
+
+enum PhoneType {
+  MOBILE = 0;
+  HOME = 1;
+  WORK = 2;
+  ANY = 3;
+}
+
+message PhoneNumber {
+  string number = 1;
+  PhoneType type = 2;
+}
+
+message Person {
+  optional string googleId = 1;
+  optional string firstName = 2;
+  optional string middleName = 12;
+  optional string lastName = 3;
+  optional string id = 4;  // ObjectId
+  string email = 5;
+  repeated string alternativeEmails = 6;
+
+  repeated PhoneNumber phones = 7;
+  optional string picture = 8;
+  google.protobuf.Timestamp lastUpdated = 9;
+
+  PersonAchievements experience = 10;
+}
+
+message PersonSearchParams {
+  optional string firstName = 1;
+  optional string middleName = 2;
+  optional string lastName = 3;
+  optional int64 id = 4;  // Unique ID number for this person.
+  optional string email = 5;
+  optional PhoneNumber phoneNumber = 7;
+}
+
+message PersonUpdate {
+  string id = 1;
+  Person newData = 3;
+}
+
+message PublUpdate {
+  uint64 id = 1;
+  Publication newData = 3;
+}
+
+message UpdateResponse {
+  enum Status {COMPLETED_SUCCESSFULLY = 0; PARTIAL = 1; ERROR = 2;}
+
+  Status result = 1;
+  repeated string errorMessages = 2;
+}
+
+service PersonService {
+  rpc createNewPerson(Person) returns (Person);
+  rpc searchPerson(PersonSearchParams) returns (stream Person);
+  rpc updatePerson(PersonUpdate) returns (UpdateResponse);
+}
+
+service PublicationsService {
+  rpc createNewPublication(Publication) returns (Publication);
+  rpc updatePublication(PublUpdate) returns (UpdateResponse);
+}
